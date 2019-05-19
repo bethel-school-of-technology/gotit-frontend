@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const sqlite = require('sqlite3').verbose();
+// const sqlite = require('sqlite3').verbose();
 var models = require('../models');
 const passport = require('passport');
 const connectEnsure = require('connect-ensure-login');
@@ -96,6 +96,16 @@ function (req, res, next) {
 router.get('/logout', function(req, res) {
   req.logout();
   res.redirect('/users/login');
+});
+
+// auth with google+
+router.get('/google', passport.authenticate('google', {
+  scope: ['profile']
+}));
+
+// callback route for google to redirect to
+router.get('/google/redirect', (req, res) => {
+  res.send('you reached the redirect URI');
 });
 
 
