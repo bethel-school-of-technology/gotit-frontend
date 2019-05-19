@@ -1,7 +1,8 @@
 var createError = require('http-errors');
 var express = require('express');
-const users =require('./routes/users');
+const users = require('./routes/users');
 var mongoose = require('mongoose');
+const keys = require('./config/keys');
 var bodyParse = require('body-parser');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -23,6 +24,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 
+mongoose.connect(keys.mongodb.dbURI, () =>{
+  console.log('connect to mongodb')
+});
+
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -43,10 +48,13 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
+app.get('/', (req, res) => {
+  res.render('home');
 });
+// catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//   next(createError(404));
+// });
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -54,7 +62,7 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  //  res.status(err.status || 500);
+  res.status(err.status || 500);
   res.render('error');
 });
 
